@@ -48,9 +48,8 @@ def home(request):
             </style>
         </head>
         <body>
-            <h1>Welcome to HCMS API</h1>
+            <h1>Welcome to HPH API</h1>
             <p>Explore my API with swagger ui <a href='/swagger/'>here</a> 🚀</p>
-            <p>Explore my API with redoc <a href='/redoc/'>here</a> 🚀</p>
         </body>
     </html>
     """
