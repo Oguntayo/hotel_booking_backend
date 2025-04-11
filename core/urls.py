@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from .views import AllBookingsView
 
 
 
@@ -17,6 +18,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('register/', RegisterView.as_view(), name='register'),
     path('send-test-email/', SendTestEmailView.as_view(), name='send_test_email'),
+    path('all-bookings/', AllBookingsView.as_view(), name='all_bookings'), 
 
 
 ]

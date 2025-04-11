@@ -18,6 +18,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer, EmailTokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Booking
+from .serializers import BookingSerializer
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -68,9 +73,32 @@ from .models import Hotel, Room, Booking
 from .serializers import HotelSerializer, RoomSerializer, BookingSerializer
 from django.conf import settings
 import mailtrap as mt  # Import the Mailtrap package
-
+import mailtrap as mt
+from django.conf import settings
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
 class BookingViewSet(viewsets.ModelViewSet):
-    queryset = Booking.objects.all()
+    queryset = Booking.objects.all()  # Provide a default queryset to satisfy DRF's requirement
+    serializer_class = BookingSerializer
+
+    def get_queryset(self):
+        # Get the user from the request
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated("You must be logged in to view bookings.")
+
+            
+
+        # Get the hotels owned by the user
+        hotels = Hotel.objects.filter(owner__email=user.email)
+        
+
+        # Get the rooms related to these hotels
+        rooms = Room.objects.filter(hotel__in=hotels)
+
+        # Return bookings related to these rooms
+        return Booking.objects.filter(room__in=rooms)
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
@@ -98,12 +126,6 @@ class BookingViewSet(viewsets.ModelViewSet):
         print(response)
 
 
-import mailtrap as mt
-from django.conf import settings
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-
 class SendTestEmailView(APIView):
     def post(self, request, *args, **kwargs):
         try:
@@ -129,3 +151,12 @@ class SendTestEmailView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class AllBookingsView(APIView):
+    """
+    View to list all bookings
+    """
+    def get(self, request, *args, **kwargs):
+        bookings = Booking.objects.all()  # Get all bookings
+        serializer = BookingSerializer(bookings, many=True)  # Serialize the bookings
+        return Response(serializer.data, status=status.HTTP_200_OK)
