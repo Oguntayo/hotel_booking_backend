@@ -23,7 +23,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Booking
 from .serializers import BookingSerializer
-
+from rest_framework import viewsets
+from .models import Hotel, Room, Booking
+from .serializers import HotelSerializer, RoomSerializer, BookingSerializer
+from django.conf import settings
+import mailtrap as mt  # Import the Mailtrap package
+import mailtrap as mt
+from django.conf import settings
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -50,14 +59,23 @@ class EmailLoginView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
 
 
+# class HotelViewSet(viewsets.ModelViewSet):
+#     queryset = Hotel.objects.all()
+#     serializer_class = HotelSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def perform_create(self, serializer):
+#         serializer.save(owner=self.request.user)
+
 class HotelViewSet(viewsets.ModelViewSet):
-    queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        return Hotel.objects.filter(owner=self.request.user)
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
-
 
 class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all()
@@ -68,16 +86,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         return RoomSerializer
 
 
-from rest_framework import viewsets
-from .models import Hotel, Room, Booking
-from .serializers import HotelSerializer, RoomSerializer, BookingSerializer
-from django.conf import settings
-import mailtrap as mt  # Import the Mailtrap package
-import mailtrap as mt
-from django.conf import settings
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
+
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()  # Provide a default queryset to satisfy DRF's requirement
     serializer_class = BookingSerializer
