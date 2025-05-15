@@ -14,12 +14,6 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-]
 
 
 
@@ -69,7 +63,6 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
-# Add Bearer authentication to Swagger
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'Bearer': {
@@ -79,7 +72,7 @@ SWAGGER_SETTINGS = {
             'description': "Enter 'Bearer <your_token>' to authenticate",
         }
     },
-    'USE_SESSION_AUTH': False,  # Disables Django session authentication
+    'USE_SESSION_AUTH': False, 
 }
 
 
